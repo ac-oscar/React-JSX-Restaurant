@@ -2,11 +2,9 @@ import React, { Component } from 'react';
 import {
     Card,
     CardImg,
-    CardImgOverlay,
     CardText,
     CardBody,
-    CardTitle,
-    Media
+    CardTitle
 } from 'reactstrap';
 
 class DishDetail extends Component {
@@ -33,16 +31,23 @@ class DishDetail extends Component {
 
     renderComments(comments) {
         if (comments.length > 0) {
-            return comments.map(comment => {
+            const cm = comments.map(comment => {
                 return (
-                    <Media key={comment.id} tag="li">
-                        <Media body>
-                            <Media>{comment.comment}</Media>
-                            <p>--{comment.author}, {new Date(comment.date).toDateString()}</p>
-                        </Media>
-                    </Media>
+                    <li key={comment.id} >
+                        <p>{comment.comment}</p>
+                        <p>-- {comment.author}, {new Intl.DateTimeFormat('en-us', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(comment.date)))} </p>
+                    </li>
                 );
             });
+
+            return (
+                <div className="col-12 col-md-5 m-1">
+                    <h4>Comments</h4>
+                    <ul className="list-unstyled">
+                        {cm}
+                    </ul>
+                </div>
+            );
         }
         else {
             return (<div></div>);
@@ -50,20 +55,14 @@ class DishDetail extends Component {
     }
 
     render() {
-        const dish = this.props.selectedDish;
+        const dish = this.props.dish;
 
-        if (dish !== null) {
+        if (dish !== null && dish !== undefined) {
             return (
-                <div className="row">
-                    {this.renderDish(dish)}
-
-                    <div className="col-12 col-md-5 m-1">
-                        <h4>Comments</h4>
-
-                        <Media list>
-                            {this.renderComments(dish.comments)}
-                        </Media>
-
+                <div className="container">
+                    <div className="row">
+                        {this.renderDish(dish)}
+                        {this.renderComments(dish.comments)}
                     </div>
                 </div>
             );
