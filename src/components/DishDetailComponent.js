@@ -1,46 +1,145 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { Control, LocalForm, Errors } from 'react-redux-form';
 import {
     Card,
     CardImg,
     CardText,
     CardBody,
     CardTitle,
+    Button,
     Breadcrumb,
-    BreadcrumbItem
+    BreadcrumbItem,
+    Modal,
+    ModalHeader,
+    ModalBody,
+    Label,
+    FormGroup
 } from 'reactstrap';
 
-function RenderDish({ dish }) {
-    return (
-        <div className="col-12 col-md-5 m-1">
-            <Card>
-                <CardImg width="100%" src={dish.image} alt={dish.name} />
-                <CardBody>
-                    <CardTitle>{dish.name}</CardTitle>
-                    <CardText>{dish.description}</CardText>
-                </CardBody>
-            </Card>
-        </div>
-    );
+const required = (val) => val && val.length;
+const minLength = (len) => (val) => val && (val.length >= len);
+const maxLength = (len) => (val) => !(val) || (val.length <= len);
+
+class CommentForm extends Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            isModalOpen: false
+        }
+
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.toogleModal = this.toogleModal.bind(this);
+    }
+
+    handleSubmit(values) {
+        alert('Current State is: ' + JSON.stringify(values));
+    }
+
+    toogleModal() {
+        this.setState({
+            isModalOpen: !this.state.isModalOpen
+        });
+    }
+
+    render() {
+        return (
+            <React.Fragment>
+                <Button outline onClick={this.toogleModal}>
+                    <span className="fa fa-pencil fa-lg"></span> Submit Comments
+                </Button>
+
+                <Modal isOpen={this.state.isModalOpen} toggle={this.toogleModal}>
+                    <ModalHeader toggle={this.toogleModal}>Submit Comments</ModalHeader>
+                    <ModalBody>
+                        <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
+                            <FormGroup>
+                                <Label htmlFor="rating">Rating</Label>
+                                <Control.select model=".rating" id="txtRating" name="rating" className="form-control">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                </Control.select >
+                            </FormGroup>
+                            <FormGroup>
+                                <Label htmlFor="author">Your Name</Label>
+                                <Control.text
+                                    model=".author"
+                                    id="txxtAuthor"
+                                    name="author"
+                                    className="form-control"
+                                    validators={{
+                                        required,
+                                        minLength: minLength(3),
+                                        maxLength: maxLength(15)
+                                    }}
+                                />
+                                <Errors
+                                    className="text-danger"
+                                    model=".author"
+                                    show="touched"
+                                    messages={{
+                                        required: 'Required',
+                                        minLength: 'Must be greater than 2 characters',
+                                        maxLength: 'Must be 15 characters or less',
+                                    }}
+                                />
+                            </FormGroup>
+                            <FormGroup>
+                                <Label htmlFor="comment">Comment</Label>
+                                <Control.textarea
+                                    model=".comment"
+                                    id="txtComment"
+                                    name="comment"
+                                    rows="6"
+                                    className="form-control"
+                                />
+                            </FormGroup>
+                            <Button type="submit" color="primary">Submit</Button>
+                        </LocalForm>
+                    </ModalBody>
+                </Modal>
+            </React.Fragment>
+        );
+    }
 }
 
-function RenderComments({ comments }) {
-    if (comments.length > 0) {
-        const cm = comments.map(comment => {
-            return (
-                <li key={comment.id} >
-                    <p>{comment.comment}</p>
-                    <p>-- {comment.author}, {new Intl.DateTimeFormat('en-us', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(comment.date)))} </p>
-                </li>
-            );
-        });
+function RenderDish({ dish }) {
+    if (dish !== null) {
+        return (
+            <div className="col-12 col-md-5 m-1">
+                <Card>
+                    <CardImg width="100%" src={dish.image} alt={dish.name} />
+                    <CardBody>
+                        <CardTitle>{dish.name}</CardTitle>
+                        <CardText>{dish.description}</CardText>
+                    </CardBody>
+                </Card>
+            </div>
+        );
+    }
+    else {
+        return (<div></div>);
+    }
+}
 
+function RenderComments({ comment }) {
+    if (comment !== null) {
         return (
             <div className="col-12 col-md-5 m-1">
                 <h4>Comments</h4>
                 <ul className="list-unstyled">
-                    {cm}
+                    <li key={comment.id} >
+                        <p>{comment.comment}</p>
+                        <p>-- {comment.author}, {new Intl.DateTimeFormat('en-us', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(comment.date)))} </p>
+                    </li>
                 </ul>
+                <br />
+                <CommentForm />
             </div>
         );
     }
@@ -65,7 +164,7 @@ const DishDetail = (props) => {
                 </div>
                 <div className="row">
                     <RenderDish dish={props.dish} />
-                    <RenderComments comments={props.comments} />
+                    <RenderComments comment={props.comments} />
                 </div>
             </div>
         );
