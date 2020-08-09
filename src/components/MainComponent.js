@@ -15,7 +15,8 @@ import {
     fetchComments,
     fetchPromotions,
     fetchLeaders,
-    postComment
+    postComment,
+    postFeedback
 } from '../redux/ActionCreators';
 
 import {
@@ -40,7 +41,8 @@ const mapDispatchToProps = (dispatch) => ({
     fetchPromotions: () => { dispatch(fetchPromotions()) },
     fetchLeaders: () => { dispatch(fetchLeaders()) },
     resetFeedbackForm: () => { dispatch(actions.reset('feedback')); },
-    postComment: (dishId, rating, author, comment) => dispatch(postComment(dishId, rating, author, comment))
+    postComment: (dishId, rating, author, comment) => dispatch(postComment(dishId, rating, author, comment)),
+    postFeedback: (values) => dispatch(postFeedback(values))
 });
 
 class Main extends Component {
@@ -54,6 +56,7 @@ class Main extends Component {
         this.props.fetchComments();
         this.props.fetchPromotions();
         this.props.fetchLeaders();
+        this.props.postFeedback();
     }
 
     render() {
@@ -82,7 +85,10 @@ class Main extends Component {
 
         const AboutPage = () => <About leaders={this.props.leaders} />
 
-        const ContactPage = () => <Contact resetFeedbackForm={this.props.resetFeedbackForm} />
+        const ContactPage = () => <Contact
+            resetFeedbackForm={this.props.resetFeedbackForm}
+            postFeedback={this.props.postFeedback}
+        />
 
         return (
             <div>
