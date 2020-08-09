@@ -8,6 +8,7 @@ import Header from './HeaderComponent';
 import Footer from './FooterComponent';
 import { connect } from 'react-redux';
 import { actions } from 'react-redux-form';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 import {
     fetchDishes,
@@ -86,14 +87,18 @@ class Main extends Component {
         return (
             <div>
                 <Header />
-                <Switch>
-                    <Route path='/home' component={HomePage} />
-                    <Route exact path='/menu' component={MenuPage} />
-                    <Route path='/menu/:dishId' component={DishWithId} />
-                    <Route exact path='/contactus' component={ContactPage} />
-                    <Route exact path='/aboutus' component={AboutPage} />
-                    <Redirect to="/home" />
-                </Switch>
+                <TransitionGroup>
+                    <CSSTransition key={this.props.location.key} classNames="page" timeout={300}>
+                        <Switch>
+                            <Route path='/home' component={HomePage} />
+                            <Route exact path='/menu' component={MenuPage} />
+                            <Route path='/menu/:dishId' component={DishWithId} />
+                            <Route exact path='/contactus' component={ContactPage} />
+                            <Route exact path='/aboutus' component={AboutPage} />
+                            <Redirect to="/home" />
+                        </Switch>
+                    </CSSTransition>
+                </TransitionGroup>
                 <Footer />
             </div >
         );
